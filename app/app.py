@@ -156,6 +156,15 @@ def load_all_models():
 
 models = load_all_models()
 
+# Display model loading status
+with st.sidebar:
+    st.markdown("### 🔧 Model Status")
+    st.write(f"RandomForest: {'✅' if models['rf'] is not None else '❌'}")
+    st.write(f"XGBoost: {'✅' if models['xgb'] is not None else '❌'}")
+    st.write(f"ANN: {'✅' if models['ann'] is not None else '❌'}")
+    st.write(f"Training Data: {'✅' if models['train_df'] is not None else '❌'}")
+    st.markdown("---")
+
 
 # =============================
 # HEADER
@@ -309,6 +318,10 @@ with right:
 
     # ========== Combine full feature vector ==========
     feature_cols = models["feature_cols"]
+    
+    if not feature_cols:
+        st.error("Feature columns not found. Please check training data file.")
+        st.stop()
 
     input_row = pd.DataFrame(columns=feature_cols)
     for col, val in clinical_df.iloc[0].items():
@@ -335,19 +348,29 @@ with right:
 
     if predict_clicked:
         try:
+            # Check if models are loaded
             if model_choice == "RandomForest":
                 model = models["rf"]
                 scaler = models["rf_scaler"]
+                if model is None or scaler is None:
+                    st.error("RandomForest model or scaler not found. Please check model files.")
+                    st.stop()
                 X_scaled = scaler.transform(input_row.values)
                 proba = model.predict_proba(X_scaled)[0,1]
 
             elif model_choice == "XGBoost":
                 model = models["xgb"]
+                if model is None:
+                    st.error("XGBoost model not found. Please check model files.")
+                    st.stop()
                 proba = model.predict_proba(input_row.values)[0,1]
 
             else:
                 model = models["ann"]
                 scaler = models["ann_scaler"]
+                if model is None or scaler is None:
+                    st.error("ANN model or scaler not found. Please check model files.")
+                    st.stop()
                 X_scaled = scaler.transform(input_row.values)
                 proba = float(model.predict(X_scaled).ravel()[0])
 
