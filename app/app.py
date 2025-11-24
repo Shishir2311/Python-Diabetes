@@ -49,9 +49,73 @@ CM_ANN = "../results/confusion_matrix_ann_norm.png"
 # =============================
 
 st.set_page_config(
-    page_title="MedAssist360 — Diabetes Prediction with Genetics",
-    layout="wide"
+    page_title="DiabetesAI Pro — Advanced Diabetes Prediction",
+    layout="wide",
+    page_icon="🩺"
 )
+
+# Custom CSS for enhanced UI
+st.markdown("""
+<style>
+    .main-header {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        text-align: center;
+        color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .metric-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-left: 4px solid #667eea;
+        margin: 1rem 0;
+    }
+    .risk-high {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .risk-moderate {
+        background: linear-gradient(135deg, #ffa726, #ff9800);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .risk-low {
+        background: linear-gradient(135deg, #66bb6a, #4caf50);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .stButton > button {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 0.5rem 2rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .sidebar .sidebar-content {
+        background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+</style>
+""", unsafe_allow_html=True)
 
 
 # =============================
@@ -98,32 +162,47 @@ models = load_all_models()
 # =============================
 
 st.markdown("""
-<h1 style='text-align:center; margin-top:-30px;'>
-🩺 MedAssist360 – Diabetes Risk Prediction (Clinical + Genetic PCA)
-</h1>
+<div class="main-header">
+    <h1 style="margin:0; font-size:2.5rem;">
+        🩺 DiabetesAI Pro
+    </h1>
+    <p style="margin:0.5rem 0 0 0; font-size:1.2rem; opacity:0.9;">
+        Advanced Diabetes Risk Prediction with Clinical & Genetic Analysis
+    </p>
+</div>
 """, unsafe_allow_html=True)
-
-st.markdown("---")
 
 
 # =============================
 # SIDEBAR
 # =============================
 
-st.sidebar.header("⚙ Configuration")
+st.sidebar.markdown("""
+<div style="text-align:center; padding:1rem; background:linear-gradient(135deg, #667eea, #764ba2); border-radius:10px; margin-bottom:1rem;">
+    <h2 style="color:white; margin:0;">⚙️ Configuration</h2>
+</div>
+""", unsafe_allow_html=True)
 
+st.sidebar.markdown("### 🤖 Model Selection")
 model_choice = st.sidebar.selectbox(
-    "Choose Prediction Model:",
-    ["RandomForest", "XGBoost", "ANN"]
+    "Choose AI Model:",
+    ["RandomForest", "XGBoost", "ANN"],
+    help="Select the machine learning model for prediction"
 )
 
-use_snp = st.sidebar.checkbox("Upload SNP CSV for genetic PCA?", value=False)
+st.sidebar.markdown("### 🧬 Genetic Analysis")
+use_snp = st.sidebar.checkbox("🧠 Enable Genetic PCA Analysis", value=False)
 
 uploaded_file = None
 if use_snp:
-    uploaded_file = st.sidebar.file_uploader("Upload SNP CSV (columns: rs1..rs50)", type=["csv"])
+    uploaded_file = st.sidebar.file_uploader(
+        "📄 Upload SNP Data (CSV)", 
+        type=["csv"],
+        help="Upload CSV file with rs1 to rs50 columns"
+    )
 
 st.sidebar.markdown("---")
+st.sidebar.markdown("### 📈 Model Performance")
 
 if os.path.exists(ROC_IMG):
     st.sidebar.image(ROC_IMG, caption="Model ROC Comparison", use_column_width=True)
@@ -141,25 +220,39 @@ left, right = st.columns(2)
 # ===========================================================
 
 with left:
-    st.subheader("🧍 Patient Clinical & Lifestyle Information")
+    st.markdown("""
+    <div style="background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding:1rem; border-radius:10px; margin-bottom:1rem;">
+        <h3 style="color:white; margin:0; text-align:center;">🧍 Patient Information</h3>
+    </div>
+    """, unsafe_allow_html=True)
 
-    pregnancies = st.number_input("Pregnancies", 0, 20, 1)
-    glucose = st.number_input("Glucose Level", 0, 300, 120)
-    bp = st.number_input("Blood Pressure", 0, 200, 70)
-    skin = st.number_input("Skin Thickness", 0, 100, 20)
-    insulin = st.number_input("Insulin Level", 0, 1000, 80)
-    bmi = st.number_input("BMI", 0.0, 80.0, 28.0)
-    dpf = st.number_input("Diabetes Pedigree Function", 0.0, 5.0, 0.5)
-    age = st.number_input("Age", 0, 120, 35)
-    family_history = st.selectbox("Family History (binary)", [0,1], index=0)
+    st.markdown("#### 🩺 Clinical Measurements")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        pregnancies = st.number_input("🤰 Pregnancies", 0, 20, 1)
+        glucose = st.number_input("🍭 Glucose Level (mg/dL)", 0, 300, 120)
+        bp = st.number_input("❤️ Blood Pressure (mmHg)", 0, 200, 70)
+        skin = st.number_input("🔍 Skin Thickness (mm)", 0, 100, 20)
+        insulin = st.number_input("💉 Insulin Level (μU/mL)", 0, 1000, 80)
+    
+    with col2:
+        bmi = st.number_input("⚖️ BMI (kg/m²)", 0.0, 80.0, 28.0)
+        dpf = st.number_input("🧬 Diabetes Pedigree Function", 0.0, 5.0, 0.5)
+        age = st.number_input("🎂 Age (years)", 0, 120, 35)
+        family_history = st.selectbox("👨‍👩‍👧‍👦 Family History", [0,1], index=0, format_func=lambda x: "No" if x == 0 else "Yes")
 
-    # Manual PCs (fallback)
-    st.markdown("### 🧬 Genetic PCA Inputs (if no SNP uploaded)")
-    pc1 = st.number_input("PC_gen_1", value=0.0)
-    pc2 = st.number_input("PC_gen_2", value=0.0)
-    pc3 = st.number_input("PC_gen_3", value=0.0)
-    pc4 = st.number_input("PC_gen_4", value=0.0)
-    pc5 = st.number_input("PC_gen_5", value=0.0)
+    st.markdown("#### 🧬 Manual Genetic Components")
+    st.info("📝 Use these fields only if not uploading SNP data")
+    
+    pc_col1, pc_col2 = st.columns(2)
+    with pc_col1:
+        pc1 = st.number_input("🧬 PC_gen_1", value=0.0)
+        pc2 = st.number_input("🧬 PC_gen_2", value=0.0)
+        pc3 = st.number_input("🧬 PC_gen_3", value=0.0)
+    with pc_col2:
+        pc4 = st.number_input("🧬 PC_gen_4", value=0.0)
+        pc5 = st.number_input("🧬 PC_gen_5", value=0.0)
 
 
 # ===========================================================
@@ -167,7 +260,11 @@ with left:
 # ===========================================================
 
 with right:
-    st.subheader("📈 Prediction & Explainability")
+    st.markdown("""
+    <div style="background:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding:1rem; border-radius:10px; margin-bottom:1rem;">
+        <h3 style="color:white; margin:0; text-align:center;">📈 AI Prediction & Analysis</h3>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Build clinical feature vector
     clinical_df = pd.DataFrame([{
@@ -226,15 +323,17 @@ with right:
 
     input_row = input_row.fillna(0)
 
-    st.markdown("### 🔍 Processed Input Used for Prediction:")
-    st.dataframe(input_row.T, height=300)
+    with st.expander("🔍 View Processed Input Data", expanded=False):
+        st.dataframe(input_row.T, height=300)
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Centered prediction button
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        predict_clicked = st.button("🔮 Predict Diabetes Risk", use_container_width=True)
 
-    # ===========================================================
-    # PREDICT BUTTON
-    # ===========================================================
-
-    if st.button("🔮 Predict Diabetes Risk"):
+    if predict_clicked:
         try:
             if model_choice == "RandomForest":
                 model = models["rf"]
@@ -252,55 +351,76 @@ with right:
                 X_scaled = scaler.transform(input_row.values)
                 proba = float(model.predict(X_scaled).ravel()[0])
 
-            # Risk classification
+            # Risk classification with enhanced styling
             if proba >= 0.75:
-                risk = "HIGH"
-                color = "red"
+                risk = "HIGH RISK"
+                risk_class = "risk-high"
+                risk_icon = "🔴"
             elif proba >= 0.45:
-                risk = "MODERATE"
-                color = "orange"
+                risk = "MODERATE RISK"
+                risk_class = "risk-moderate"
+                risk_icon = "🟠"
             else:
-                risk = "LOW"
-                color = "green"
+                risk = "LOW RISK"
+                risk_class = "risk-low"
+                risk_icon = "🟢"
 
-            st.markdown(f"""
-            ### 🎯 Predicted Probability: **{proba:.4f}**  
-            ### ⚠ Risk Level: <span style='color:{color}; font-size:24px;'><b>{risk}</b></span>
-            """, unsafe_allow_html=True)
+            # Display results in beautiful cards
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <h3 style="margin:0; color:#667eea;">🎯 Probability Score</h3>
+                    <h1 style="margin:0.5rem 0; color:#333;">{proba:.1%}</h1>
+                    <p style="margin:0; color:#666;">Confidence: {proba:.4f}</p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown(f"""
+                <div class="{risk_class}">
+                    <h3 style="margin:0;">{risk_icon} Risk Assessment</h3>
+                    <h1 style="margin:0.5rem 0;">{risk}</h1>
+                    <p style="margin:0; opacity:0.9;">Based on AI Analysis</p>
+                </div>
+                """, unsafe_allow_html=True)
 
-            st.markdown("---")
+            st.markdown("<br>", unsafe_allow_html=True)
 
             # ===========================================================
             # EXPLAINABILITY — SHAP or LIME
             # ===========================================================
 
-            st.subheader("🧠 Explainability (Local)")
+            st.markdown("""
+            <div style="background:linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding:1rem; border-radius:10px; margin:1rem 0;">
+                <h3 style="margin:0; text-align:center; color:#333;">🧠 AI Model Explanation</h3>
+                <p style="margin:0.5rem 0 0 0; text-align:center; color:#666;">Understanding how the AI made this prediction</p>
+            </div>
+            """, unsafe_allow_html=True)
             tmpfile = None
 
             if model_choice in ("RandomForest", "XGBoost"):
                 try:
-                    full_df = models["train_df"]
                     explainer = shap.TreeExplainer(model)
-                    shap_vals = explainer.shap_values(pd.DataFrame(input_row.values, columns=feature_cols))
-
+                    shap_vals = explainer.shap_values(input_row.values)
+                    
+                    # Get values for binary classification
                     if isinstance(shap_vals, list):
-                        shap_vals = shap_vals[1]
-
-                    exp = shap.Explanation(
-                        values=shap_vals[0],
-                        base_values=explainer.expected_value if not isinstance(explainer.expected_value, list)
-                        else explainer.expected_value[1],
-                        data=input_row.iloc[0].values,
-                        feature_names=feature_cols
-                    )
-
+                        values = shap_vals[1][0]  # positive class, first sample
+                    else:
+                        values = shap_vals[0]
+                    
                     tmpfile = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
                     plt.figure(figsize=(8,4))
-                    shap.plots.waterfall(exp, show=False)
+                    shap.plots.bar(shap.Explanation(
+                        values=values,
+                        feature_names=feature_cols
+                    ), show=False)
                     plt.tight_layout()
                     plt.savefig(tmpfile.name, dpi=300)
                     plt.close()
-                    st.image(tmpfile.name, caption="Local SHAP Waterfall", use_column_width=True)
+                    st.image(tmpfile.name, caption="Local SHAP Feature Importance", use_column_width=True)
 
                 except Exception as e:
                     st.warning("SHAP local explanation failed: " + str(e))
@@ -331,7 +451,12 @@ with right:
             # GLOBAL PCA SHAP PLOTS
             # ===========================================================
 
-            st.subheader("🌐 Global Explainability — Genetic PCA Importance")
+            st.markdown("""
+            <div style="background:linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding:1rem; border-radius:10px; margin:1rem 0;">
+                <h3 style="margin:0; text-align:center; color:#333;">🌐 Global Model Insights</h3>
+                <p style="margin:0.5rem 0 0 0; text-align:center; color:#666;">Genetic PCA component importance across all predictions</p>
+            </div>
+            """, unsafe_allow_html=True)
 
             if os.path.exists(PCA_SUMMARY_IMG) and os.path.exists(PCA_BAR_IMG):
                 colA, colB = st.columns(2)
@@ -344,34 +469,38 @@ with right:
             # PDF REPORT EXPORT
             # ===========================================================
 
-            if st.button("📄 Download PDF Report"):
-                pdf = FPDF()
-                pdf.set_auto_page_break(auto=True, margin=15)
-                pdf.add_page()
-                pdf.set_font("Arial", size=16)
-                pdf.cell(0, 10, "MedAssist360 — Diabetes Prediction Report", ln=True, align="C")
-                
-                pdf.ln(5)
-                pdf.set_font("Arial", size=12)
-                pdf.cell(0, 8, f"Model Used: {model_choice}", ln=True)
-                pdf.cell(0, 8, f"Predicted Probability: {proba:.4f}", ln=True)
-                pdf.cell(0, 8, f"Risk Level: {risk}", ln=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Generate PDF
+            pdf = FPDF()
+            pdf.set_auto_page_break(auto=True, margin=15)
+            pdf.add_page()
+            pdf.set_font("Arial", size=16)
+            pdf.cell(0, 10, "DiabetesAI Pro - Prediction Report", ln=True, align="C")
+            
+            pdf.ln(5)
+            pdf.set_font("Arial", size=12)
+            pdf.cell(0, 8, f"Model Used: {model_choice}", ln=True)
+            pdf.cell(0, 8, f"Predicted Probability: {proba:.4f}", ln=True)
+            pdf.cell(0, 8, f"Risk Level: {risk}", ln=True)
 
-                pdf.ln(5)
-                pdf.set_font("Arial", size=12)
-                pdf.cell(0, 8, "Patient Inputs:", ln=True)
-                for k, v in input_row.iloc[0].items():
-                    pdf.cell(0, 6, f"{k}: {v}", ln=True)
+            pdf.ln(5)
+            pdf.set_font("Arial", size=12)
+            pdf.cell(0, 8, "Patient Inputs:", ln=True)
+            for k, v in input_row.iloc[0].items():
+                pdf.cell(0, 6, f"{k}: {v}", ln=True)
 
-                # Add SHAP image
-                if tmpfile and os.path.exists(tmpfile.name):
-                    pdf.add_page()
-                    pdf.image(tmpfile.name, x=10, y=20, w=180)
-
-                pdf_bytes = pdf.output(dest='S').encode('latin-1')
-                b64 = base64.b64encode(pdf_bytes).decode()
-                href = f'<a href="data:application/pdf;base64,{b64}" download="medassist360_report.pdf">Click here to download PDF</a>'
-                st.markdown(href, unsafe_allow_html=True)
+            pdf_bytes = pdf.output(dest='S').encode('latin-1')
+            
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.download_button(
+                    label="📄 Download PDF Report",
+                    data=pdf_bytes,
+                    file_name="diabetesai_pro_report.pdf",
+                    mime="application/pdf",
+                    use_container_width=True
+                )
 
         except Exception as e:
             st.error("Prediction failed: " + str(e))
@@ -381,16 +510,49 @@ with right:
 # MODEL PERFORMANCE SECTION
 # ===========================================================
 
-st.markdown("---")
-st.subheader("📊 Model Comparison & Performance Metrics")
+st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown("""
+<div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding:2rem; border-radius:10px; margin:2rem 0;">
+    <h2 style="color:white; margin:0; text-align:center;">📊 Model Performance Dashboard</h2>
+    <p style="color:white; margin:0.5rem 0 0 0; text-align:center; opacity:0.9;">Comprehensive comparison of AI model accuracy and performance</p>
+</div>
+""", unsafe_allow_html=True)
 
+# ROC Curve Comparison
 if os.path.exists(ROC_IMG):
-    st.image(ROC_IMG, caption="ROC Comparison", use_column_width=True)
+    st.markdown("### 📈 ROC Curve Analysis")
+    st.image(ROC_IMG, caption="Model Performance Comparison - ROC Curves", use_column_width=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+
+# Confusion Matrices
+st.markdown("### 🗓️ Confusion Matrix Analysis")
+st.markdown("<p style='text-align:center; color:#666; margin-bottom:1rem;'>Detailed breakdown of model predictions vs actual outcomes</p>", unsafe_allow_html=True)
 
 col_rf, col_xgb, col_ann = st.columns(3)
-if os.path.exists(CM_RF):
-    col_rf.image(CM_RF, caption="RandomForest — Normalized Confusion Matrix")
-if os.path.exists(CM_XGB):
-    col_xgb.image(CM_XGB, caption="XGBoost — Normalized Confusion Matrix")
-if os.path.exists(CM_ANN):
-    col_ann.image(CM_ANN, caption="ANN — Normalized Confusion Matrix")
+
+with col_rf:
+    if os.path.exists(CM_RF):
+        st.markdown("""
+        <div style="text-align:center; padding:0.5rem; background:#f8f9fa; border-radius:8px; margin-bottom:0.5rem;">
+            <h4 style="margin:0; color:#667eea;">🌲 Random Forest</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        st.image(CM_RF, use_column_width=True)
+
+with col_xgb:
+    if os.path.exists(CM_XGB):
+        st.markdown("""
+        <div style="text-align:center; padding:0.5rem; background:#f8f9fa; border-radius:8px; margin-bottom:0.5rem;">
+            <h4 style="margin:0; color:#667eea;">⚡ XGBoost</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        st.image(CM_XGB, use_column_width=True)
+
+with col_ann:
+    if os.path.exists(CM_ANN):
+        st.markdown("""
+        <div style="text-align:center; padding:0.5rem; background:#f8f9fa; border-radius:8px; margin-bottom:0.5rem;">
+            <h4 style="margin:0; color:#667eea;">🧠 Neural Network</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        st.image(CM_ANN, use_column_width=True)
