@@ -128,26 +128,45 @@ def load_all_models():
     models = {}
 
     # RF
-    models["rf"] = joblib.load(RF_MODEL) if os.path.exists(RF_MODEL) else None
-    models["rf_scaler"] = joblib.load(RF_SCALER) if os.path.exists(RF_SCALER) else None
+    try:
+        models["rf"] = joblib.load(RF_MODEL) if os.path.exists(RF_MODEL) else None
+        models["rf_scaler"] = joblib.load(RF_SCALER) if os.path.exists(RF_SCALER) else None
+    except Exception as e:
+        models["rf"] = None
+        models["rf_scaler"] = None
 
     # XGB
-    models["xgb"] = joblib.load(XGB_MODEL) if os.path.exists(XGB_MODEL) else None
+    try:
+        models["xgb"] = joblib.load(XGB_MODEL) if os.path.exists(XGB_MODEL) else None
+    except Exception as e:
+        models["xgb"] = None
 
     # ANN
-    models["ann"] = load_model(ANN_MODEL) if os.path.exists(ANN_MODEL) else None
-    models["ann_scaler"] = joblib.load(ANN_SCALER) if os.path.exists(ANN_SCALER) else None
+    try:
+        models["ann"] = load_model(ANN_MODEL) if os.path.exists(ANN_MODEL) else None
+        models["ann_scaler"] = joblib.load(ANN_SCALER) if os.path.exists(ANN_SCALER) else None
+    except Exception as e:
+        models["ann"] = None
+        models["ann_scaler"] = None
 
     # PCA model
-    models["pca"] = joblib.load(PCA_MODEL) if os.path.exists(PCA_MODEL) else None
-    models["snp_scaler"] = joblib.load(SNP_SCALER) if os.path.exists(SNP_SCALER) else None
+    try:
+        models["pca"] = joblib.load(PCA_MODEL) if os.path.exists(PCA_MODEL) else None
+        models["snp_scaler"] = joblib.load(SNP_SCALER) if os.path.exists(SNP_SCALER) else None
+    except Exception as e:
+        models["pca"] = None
+        models["snp_scaler"] = None
 
     # Load training dataset for feature order + LIME background
-    if os.path.exists(TRAIN_DATA):
-        df = pd.read_csv(TRAIN_DATA)
-        models["train_df"] = df
-        models["feature_cols"] = [c for c in df.columns if c not in ("Outcome","sample_id")]
-    else:
+    try:
+        if os.path.exists(TRAIN_DATA):
+            df = pd.read_csv(TRAIN_DATA)
+            models["train_df"] = df
+            models["feature_cols"] = [c for c in df.columns if c not in ("Outcome","sample_id")]
+        else:
+            models["train_df"] = None
+            models["feature_cols"] = []
+    except Exception as e:
         models["train_df"] = None
         models["feature_cols"] = []
 
