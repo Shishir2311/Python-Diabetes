@@ -20,28 +20,28 @@ import shap
 # PATHS
 # =============================
 
-RF_MODEL = "../models/rf_pca_model.pkl"
-RF_SCALER = "../models/rf_pca_scaler.pkl"
+RF_MODEL = "models/rf_pca_model.pkl"
+RF_SCALER = "models/rf_pca_scaler.pkl"
 
-XGB_MODEL = "../models/xgb_model.pkl"
+XGB_MODEL = "models/xgb_model.pkl"
 
-ANN_MODEL = "../models/ann_model.h5"
-ANN_SCALER = "../models/ann_scaler.pkl"
+ANN_MODEL = "models/ann_model.h5"
+ANN_SCALER = "models/ann_scaler.pkl"
 
-PCA_MODEL = "../models/genetic_pca.pkl"
-SNP_SCALER = "../models/snp_scaler.pkl"
+PCA_MODEL = "models/genetic_pca.pkl"
+SNP_SCALER = "models/snp_scaler.pkl"
 
-TRAIN_DATA = "../data/diabetes_with_genetic_pca.csv"
-PCA_SUMMARY_IMG = "../models/shap_pca_summary.png"
-PCA_BAR_IMG = "../models/shap_pca_bar.png"
+TRAIN_DATA = "data/diabetes_with_genetic_pca.csv"
+PCA_SUMMARY_IMG = "models/shap_pca_summary.png"
+PCA_BAR_IMG = "models/shap_pca_bar.png"
 
-RESULTS_DIR = "../results"
-ROC_IMG = "../results/roc_comparison.png"
+RESULTS_DIR = "results"
+ROC_IMG = "results/roc_comparison.png"
 
 # Normalized confusion matrices
-CM_RF = "../results/confusion_matrix_randomforest_norm.png"
-CM_XGB = "../results/confusion_matrix_xgboost_norm.png"
-CM_ANN = "../results/confusion_matrix_ann_norm.png"
+CM_RF = "results/confusion_matrix_randomforest_norm.png"
+CM_XGB = "results/confusion_matrix_xgboost_norm.png"
+CM_ANN = "results/confusion_matrix_ann_norm.png"
 
 
 # =============================
